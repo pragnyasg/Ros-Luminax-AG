@@ -1,0 +1,12 @@
+# LUMI Vision Module Dependencies
+# Target: Ubuntu 24.04 LTS / Raspberry Pi 5 / Python 3.12+
+
+# Core Computer Vision & Array Processing
+opencv-python>=4.8.0.76,<5.0.0
+numpy>=1.24.0,<2.3.0
+
+# Configuration Management
+PyYAML>=6.0.1
+
+# Testing & Quality Assurance
+pytest>=7.4.0

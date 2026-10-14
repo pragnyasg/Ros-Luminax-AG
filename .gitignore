@@ -1,0 +1,55 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Configuration (Keep template, ignore local active config)
+config/config.yaml
+!config/config.example.yaml
+
+# Biometric & Identity Data (Strict Privacy - NEVER commit personal biometric data)
+data/*.json
+data/*.db
+data/*.sqlite
+!data/.gitkeep
+
+# Media & Recordings (Never commit webcam captures, photos, or video recordings)
+captures/
+recordings/
+*.mp4
+*.avi
+*.mkv
+*.mov
+
+# Model Binaries (Excluded to keep repository lightweight; download via scripts/download_models.sh)
+models/*.onnx
+!models/README.md
+
+# Logs & Temporary files
+*.log
+logs/
+tmp/
+.temp/
+
+# IDE & OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini

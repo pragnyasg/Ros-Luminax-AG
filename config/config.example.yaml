@@ -1,0 +1,47 @@
+# LUMI Vision Configuration Example
+# Copy this file to config/config.yaml for local customization.
+
+camera:
+  # Camera device index (0 for default laptop webcam, 1/2 for external USB cameras)
+  # On Linux/Ubuntu, can also be a device path like "/dev/video0" or a video file path
+  index: 0
+  # Requested capture resolution
+  width: 640
+  height: 480
+  # Target capture frames per second
+  fps: 30
+
+detection:
+  # Path to YuNet ONNX model (relative to project root or absolute)
+  model_path: "models/face_detection_yunet_2023mar.onnx"
+  # Confidence score threshold for face detection (0.0 - 1.0)
+  score_threshold: 0.80
+  # Non-maximum suppression threshold to eliminate duplicate bounding boxes
+  nms_threshold: 0.30
+  # Maximum number of candidate faces to detect per frame
+  top_k: 5000
+
+recognition:
+  # Path to SFace ONNX model (relative to project root or absolute)
+  model_path: "models/face_recognition_sface_2021dec.onnx"
+  # Distance metric: "cosine" (recommended) or "l2"
+  distance_metric: "cosine"
+  # Cosine similarity threshold: scores >= threshold are considered a match (~0.363 for SFace)
+  cosine_threshold: 0.363
+  # Norm L2 distance threshold: distances <= threshold are considered a match (~1.128 for SFace)
+  l2_threshold: 1.128
+
+database:
+  # Path to local identities JSON database
+  path: "data/identities.json"
+
+display:
+  # Whether to display a GUI window (set to false for headless / background execution)
+  show_window: true
+  window_name: "LUMI Vision - Healthcare Companion"
+  show_fps: true
+  show_score: true
+  show_landmarks: false
+  # Visual styling: BGR color arrays [Blue, Green, Red]
+  box_color_known: [0, 220, 100]    # Green for verified enrolled identities
+  box_color_unknown: [0, 80, 240]   # Red/Orange for unidentified persons
