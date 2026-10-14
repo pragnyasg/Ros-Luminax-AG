@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import abc
 import logging
+import sys
+import time
 from typing import Optional, Tuple, Union
 
 import cv2
@@ -76,7 +78,6 @@ class Camera(BaseCamera):
 
     def _open_capture(self, backend: Optional[int] = None) -> None:
         """Initialize OpenCV VideoCapture with fallback options."""
-        # Convert string digits to int if passed as string index
         target_index: Union[int, str] = self.index
         if isinstance(target_index, str) and target_index.isdigit():
             target_index = int(target_index)
@@ -84,6 +85,11 @@ class Camera(BaseCamera):
         try:
             if backend is not None:
                 self._cap = cv2.VideoCapture(target_index, backend)
+            elif sys.platform.startswith("win") and isinstance(target_index, int):
+                # On Windows, prefer DirectShow (CAP_DSHOW) to avoid MSMF async grab error -1072875772
+                self._cap = cv2.VideoCapture(target_index, cv2.CAP_DSHOW)
+                if not self._cap.isOpened():
+                    self._cap = cv2.VideoCapture(target_index)
             else:
                 self._cap = cv2.VideoCapture(target_index)
         except Exception as exc:
@@ -112,7 +118,7 @@ class Camera(BaseCamera):
 
     def read(self) -> Tuple[bool, Optional[np.ndarray]]:
         """
-        Grab and decode the next video frame.
+        Grab and decode the next video frame with transient retry handling.
 
         Returns:
             Tuple[bool, Optional[np.ndarray]]: (True, frame_bgr) on success,
@@ -122,12 +128,14 @@ class Camera(BaseCamera):
             logger.warning("Camera.read() called while camera is closed.")
             return False, None
 
-        ret, frame = self._cap.read()
-        if not ret or frame is None or frame.size == 0:
-            logger.warning(f"Failed to read valid frame from camera '{self.index}'.")
-            return False, None
+        for _ in range(3):
+            ret, frame = self._cap.read()
+            if ret and frame is not None and frame.size > 0:
+                return True, frame
+            time.sleep(0.04)
 
-        return True, frame
+        logger.warning(f"Failed to read valid frame from camera '{self.index}' after retries.")
+        return False, None
 
     def is_opened(self) -> bool:
         return self._cap is not None and self._cap.isOpened()
