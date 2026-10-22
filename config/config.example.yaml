@@ -3,7 +3,7 @@
 
 camera:
   # Camera device index (0 for default laptop webcam, 1/2 for external USB cameras)
-  # On Linux/Ubuntu, can also be a device path like "/dev/video0" or a video file path
+  # On Linux/Ubuntu/Raspberry Pi, can also be a device path like "/dev/video0" or video file
   index: 0
   # Requested capture resolution
   width: 640
@@ -12,31 +12,98 @@ camera:
   fps: 30
 
 detection:
-  # Path to YuNet ONNX model (relative to project root or absolute)
+  # Path to YuNet ONNX face detection model
   model_path: "models/face_detection_yunet_2023mar.onnx"
   # Confidence score threshold for face detection (0.0 - 1.0)
   score_threshold: 0.80
-  # Non-maximum suppression threshold to eliminate duplicate bounding boxes
+  # Non-maximum suppression threshold to eliminate duplicate boxes
   nms_threshold: 0.30
-  # Maximum number of candidate faces to detect per frame
+  # Maximum candidate faces per frame
   top_k: 5000
 
 recognition:
-  # Path to SFace ONNX model (relative to project root or absolute)
+  # Path to SFace ONNX face recognition model
   model_path: "models/face_recognition_sface_2021dec.onnx"
   # Distance metric: "cosine" (recommended) or "l2"
   distance_metric: "cosine"
-  # Cosine similarity threshold: scores >= threshold are considered a match (~0.363 for SFace)
+  # Cosine similarity threshold (~0.363 for SFace)
   cosine_threshold: 0.363
-  # Norm L2 distance threshold: distances <= threshold are considered a match (~1.128 for SFace)
+  # Euclidean L2 distance threshold (~1.128 for SFace)
   l2_threshold: 1.128
 
 database:
-  # Path to local identities JSON database
+  # Path to local biometric identities database
   path: "data/identities.json"
 
+pose:
+  # Path to MediaPipe Pose Landmarker task bundle
+  model_path: "models/pose_landmarker_lite.task"
+  # Minimum pose detection confidence (0.0 - 1.0)
+  min_detection_confidence: 0.50
+  # Minimum pose tracking confidence (0.0 - 1.0)
+  min_tracking_confidence: 0.50
+  # Maximum individuals tracked simultaneously
+  num_poses: 4
+  # Render anatomical skeleton lines on webcam display
+  show_skeleton: true
+
+tracking:
+  # Maximum consecutive frames to keep track alive when candidate disappears
+  max_disappeared: 15
+  # Maximum normalized centroid distance for track association
+  max_distance: 0.35
+  # Minimum IoU threshold
+  min_iou: 0.15
+
+fall_detection:
+  # Enable temporal fall detection engine
+  enabled: true
+  # Downward velocity threshold (normalized Y/sec) triggering fall suspicion
+  rapid_velocity_threshold: 0.55
+  # Maximum time window between rapid descent and settling to horizontal (seconds)
+  transition_window_sec: 1.5
+  # Required persistent horizontal duration before confirming fall (seconds)
+  persistence_duration_sec: 2.0
+  # Alert cooldown duration to avoid duplicate alerts for same incident (seconds)
+  alert_cooldown_sec: 30.0
+  # Duration person must remain upright to confirm recovery (seconds)
+  recovery_duration_sec: 1.0
+
+monitoring:
+  # Enrolled identity to monitor (e.g. "Pragnya" or "Grandma"). If null, monitors primary active track
+  target_person: null
+  # Brief occlusion tolerance window before declaring missing (seconds)
+  occlusion_tolerance_sec: 2.0
+  # Continuous absence duration triggering person_missing alert (seconds)
+  missing_timeout_sec: 5.0
+  # Whether to emit caregiver alert when monitored person disappears
+  alert_on_missing: true
+
+events:
+  # SQLite database for persistent event history
+  db_path: "data/events.db"
+  # Directory where incident snapshot frames are stored
+  snapshots_dir: "data/snapshots"
+  # Whether to capture and save JPEG snapshots for emergency events
+  save_snapshots: true
+  # Maximum snapshots retained on disk before oldest are automatically pruned
+  max_snapshots: 500
+
+server:
+  # Run background FastAPI / WebSocket caregiver notification server
+  enabled: true
+  # API listen address (localhost for local dev; 0.0.0.0 for LAN/robot network)
+  host: "127.0.0.1"
+  # API listen port
+  port: 8000
+  # Optional secret token (leave null for development mode)
+  api_key: null
+  # Allowed CORS origins
+  cors_origins:
+    - "*"
+
 display:
-  # Whether to display a GUI window (set to false for headless / background execution)
+  # Whether to display OpenCV GUI window (set to false for headless / Pi daemon)
   show_window: true
   window_name: "LUMI Vision - Healthcare Companion"
   show_fps: true

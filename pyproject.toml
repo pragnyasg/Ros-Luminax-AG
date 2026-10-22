@@ -24,9 +24,15 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Image Recognition",
 ]
 dependencies = [
-    "opencv-python>=4.8.0.76,<5.0.0",
+    "opencv-python>=4.8.0.76",
     "numpy>=1.24.0,<2.3.0",
     "PyYAML>=6.0.1",
+    "mediapipe>=0.10.14",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.28.0",
+    "pydantic>=2.6.0",
+    "websockets>=12.0",
+    "httpx>=0.27.0",
 ]
 
 [project.optional-dependencies]

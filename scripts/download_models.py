@@ -27,6 +27,14 @@ MODELS = [
             "https://media.githubusercontent.com/media/opencv/opencv_zoo/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_recognition_sface/face_recognition_sface_2021dec.onnx",
         ],
     },
+    {
+        "name": "MediaPipe Pose Landmarker (Lite)",
+        "filename": "pose_landmarker_lite.task",
+        "sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+        "urls": [
+            "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task",
+        ],
+    },
 ]
 
 
